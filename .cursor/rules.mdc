@@ -1,0 +1,27 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Magic Mirror Project Rules
+
+## Project Overview
+- A Next.js application that uses face recognition to create a smart mirror interface
+- Built with TypeScript and Tailwind CSS
+- Uses face-api.js for face detection and recognition
+- Uses Prisma for database management
+
+## Development Rules
+1. All code must be written in TypeScript
+2. Follow the established project structure
+3. Use Tailwind CSS for styling
+4. Implement proper error handling and loading states
+5. Follow the execution plan phases in order
+6. Test each phase before moving to the next
+7. Maintain proper documentation
+
+## Technical Requirements
+- Node.js environment
+- Camera access
+- Modern web browser with WebRTC support
+- SQLite database (for development)
