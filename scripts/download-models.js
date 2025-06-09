@@ -12,6 +12,10 @@ const models = [
     url: "https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/ssd_mobilenetv1_model-shard1",
   },
   {
+    name: "ssd_mobilenetv1_model-shard2",
+    url: "https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/ssd_mobilenetv1_model-shard2",
+  },
+  {
     name: "face_landmark_68_model-weights_manifest.json",
     url: "https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/face_landmark_68_model-weights_manifest.json",
   },
