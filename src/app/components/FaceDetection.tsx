@@ -144,12 +144,21 @@ const FaceDetectionComponent: React.FC<FaceDetectionProps> = ({
     setState((prev) => ({ ...prev, isDetecting: true, detectionError: null }));
 
     try {
+      // Check video readiness
+      if (video.videoWidth === 0 || video.videoHeight === 0) {
+        console.log("⚠️ Video not ready for detection (0 dimensions)");
+        setState((prev) => ({ ...prev, isDetecting: false }));
+        return;
+      }
+
       // Detect faces in the video element
       const faces = await detectFaces(video, {
         withLandmarks: showLandmarks,
         withDescriptors: false, // Not needed for basic detection
         minConfidence,
       });
+
+      console.log(`✅ Face detection completed: ${faces.length} faces found`);
 
       // Update canvas size to match video
       const canvas = canvasRef.current;

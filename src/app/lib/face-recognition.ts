@@ -104,10 +104,7 @@ const loadModels = async (): Promise<void> => {
 
     // Additional debugging
     console.log("🔍 Model debugging info:");
-    console.log(
-      "- face-api.js version:",
-      (faceapi as any).version || "unknown"
-    );
+    console.log("- face-api.js loaded:", !!faceapi);
     console.log(
       "- TensorFlow.js backend:",
       faceapi.tf?.getBackend?.() || "unknown"
@@ -174,21 +171,28 @@ export const detectFaces = async (
       );
     }
 
-    // Convert to our custom format
-    const results: FaceDetection[] = detections.map((detection: any) => ({
-      box: {
-        x: detection.detection.box.x,
-        y: detection.detection.box.y,
-        width: detection.detection.box.width,
-        height: detection.detection.box.height,
-      },
-      confidence: detection.detection.score,
-      landmarks: detection.landmarks?.positions?.map((point: any) => [
-        point.x,
-        point.y,
-      ]),
-      descriptor: detection.descriptor,
-    }));
+    // Convert to our custom format with safe property access
+    const results: FaceDetection[] = detections.map((detection: any) => {
+      // Handle different detection result structures
+      const detectionBox = detection.detection?.box || detection.box;
+      const detectionScore = detection.detection?.score || detection.score || 0;
+
+      return {
+        box: {
+          x: detectionBox?.x || 0,
+          y: detectionBox?.y || 0,
+          width: detectionBox?.width || 0,
+          height: detectionBox?.height || 0,
+        },
+        confidence: detectionScore,
+        landmarks:
+          detection.landmarks?.positions?.map((point: any) => [
+            point.x,
+            point.y,
+          ]) || undefined,
+        descriptor: detection.descriptor || undefined,
+      };
+    });
 
     return results;
   } catch (error) {
