@@ -6,11 +6,16 @@ import {
   loadFaceApiModels,
   getModelLoadingStatus,
 } from "./lib/face-recognition";
+import {
+  loadBasicFaceModel,
+  isBasicModelLoaded,
+} from "./lib/face-recognition-simple";
 
 export default function Home() {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [captureCount, setCaptureCount] = useState(0);
   const [modelStatus, setModelStatus] = useState(getModelLoadingStatus());
+  const [modelType, setModelType] = useState<"full" | "basic" | "none">("none");
 
   const handleCapture = (imageSrc: string) => {
     setCapturedImage(imageSrc);
@@ -23,10 +28,28 @@ export default function Home() {
     const loadModels = async () => {
       try {
         setModelStatus({ isLoading: true, isLoaded: false, error: false });
-        await loadFaceApiModels();
-        setModelStatus({ isLoading: false, isLoaded: true, error: false });
+
+        // Try full models first, fallback to basic model
+        try {
+          console.log("🎯 Attempting to load full face-api models...");
+          await loadFaceApiModels();
+          setModelStatus({ isLoading: false, isLoaded: true, error: false });
+          setModelType("full");
+          console.log("✅ Full models loaded successfully!");
+        } catch (fullModelError) {
+          console.warn(
+            "⚠️ Full models failed, trying basic model...",
+            fullModelError
+          );
+
+          // Fallback to basic model
+          await loadBasicFaceModel();
+          setModelStatus({ isLoading: false, isLoaded: true, error: false });
+          setModelType("basic");
+          console.log("✅ Basic face detection model loaded successfully!");
+        }
       } catch (error) {
-        console.error("Failed to load face-api models:", error);
+        console.error("❌ All model loading attempts failed:", error);
         setModelStatus({ isLoading: false, isLoaded: false, error: true });
       }
     };
@@ -71,7 +94,10 @@ export default function Home() {
                     <span className="text-yellow-400">🔄 Loading...</span>
                   )}
                   {modelStatus.isLoaded && (
-                    <span className="text-green-400">✅ Ready</span>
+                    <span className="text-green-400">
+                      ✅ Ready (
+                      {modelType === "full" ? "Full AI" : "Basic Detection"})
+                    </span>
                   )}
                   {modelStatus.error && (
                     <span className="text-red-400">❌ Error</span>

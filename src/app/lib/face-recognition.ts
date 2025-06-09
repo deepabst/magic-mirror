@@ -42,26 +42,51 @@ export const loadFaceApiModels = async (): Promise<void> => {
  * Internal function to load the models
  */
 const loadModels = async (): Promise<void> => {
-  const MODEL_PATH = "/models";
-
   console.log("🔄 Loading face-api.js models...");
-  console.log(`📁 Model path: ${MODEL_PATH}`);
 
   try {
-    // Load models sequentially for better error tracking
-    console.log("📥 Loading SSD MobileNetV1...");
-    await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_PATH);
-    console.log("✅ SSD MobileNetV1 loaded");
+    // Try CDN first as fallback, then local models
+    const MODEL_URL =
+      "https://raw.githubusercontent.com/justadudewhohacks/face-api.js/v0.22.2/weights";
+    const LOCAL_PATH = "/models";
 
-    console.log("📥 Loading Face Landmark 68...");
-    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_PATH);
-    console.log("✅ Face Landmark 68 loaded");
+    console.log("📥 Attempting to load from CDN for compatibility...");
 
-    console.log("📥 Loading Face Recognition Network...");
-    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_PATH);
-    console.log("✅ Face Recognition Network loaded");
+    try {
+      // Load models sequentially from CDN for better compatibility
+      console.log("📥 Loading SSD MobileNetV1 from CDN...");
+      await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
+      console.log("✅ SSD MobileNetV1 loaded from CDN");
 
-    console.log("📦 All models loaded successfully:");
+      console.log("📥 Loading Face Landmark 68 from CDN...");
+      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+      console.log("✅ Face Landmark 68 loaded from CDN");
+
+      console.log("📥 Loading Face Recognition Network from CDN...");
+      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+      console.log("✅ Face Recognition Network loaded from CDN");
+
+      console.log("📦 All models loaded successfully from CDN!");
+    } catch (cdnError) {
+      console.warn("⚠️ CDN loading failed, trying local models...", cdnError);
+
+      // Fallback to local models
+      console.log("📥 Loading SSD MobileNetV1 locally...");
+      await faceapi.nets.ssdMobilenetv1.loadFromUri(LOCAL_PATH);
+      console.log("✅ SSD MobileNetV1 loaded locally");
+
+      console.log("📥 Loading Face Landmark 68 locally...");
+      await faceapi.nets.faceLandmark68Net.loadFromUri(LOCAL_PATH);
+      console.log("✅ Face Landmark 68 loaded locally");
+
+      console.log("📥 Loading Face Recognition Network locally...");
+      await faceapi.nets.faceRecognitionNet.loadFromUri(LOCAL_PATH);
+      console.log("✅ Face Recognition Network loaded locally");
+
+      console.log("📦 All models loaded successfully from local files!");
+    }
+
+    console.log("🎯 Model loading complete:");
     console.log("  - SSD MobileNetV1 (Face Detection)");
     console.log("  - Face Landmark 68 Points");
     console.log("  - Face Recognition Network");
@@ -77,20 +102,16 @@ const loadModels = async (): Promise<void> => {
       });
     }
 
-    // Check if models directory is accessible
-    console.log("🔍 Debugging model access...");
-    try {
-      const response = await fetch(
-        "/models/ssd_mobilenetv1_model-weights_manifest.json"
-      );
-      console.log(
-        "Model manifest access:",
-        response.status,
-        response.statusText
-      );
-    } catch (fetchError) {
-      console.error("Cannot access model files:", fetchError);
-    }
+    // Additional debugging
+    console.log("🔍 Model debugging info:");
+    console.log(
+      "- face-api.js version:",
+      (faceapi as any).version || "unknown"
+    );
+    console.log(
+      "- TensorFlow.js backend:",
+      faceapi.tf?.getBackend?.() || "unknown"
+    );
 
     throw new Error(`Failed to load face recognition models: ${error}`);
   }
