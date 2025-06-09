@@ -36,16 +36,24 @@ export default function Home() {
       : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 pt-20 p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">
             🪞 Magic Mirror
           </h1>
-          <p className="text-gray-300">
-            Face Recognition System - Task 1.3: Face Detection
+          <p className="text-gray-300 mb-4">
+            Face Recognition System - Phase 1 & 2 Complete
           </p>
+          <div className="flex justify-center gap-4">
+            <a
+              href="/train"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+            >
+              🎯 Train New User
+            </a>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">

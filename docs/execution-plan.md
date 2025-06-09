@@ -116,12 +116,17 @@ model User {
 
 ## Phase 3: Training Interface (2 hours)
 
-### Task 3.1: Create Training Page - **NEXT UP**
+### Task 3.1: Create Training Page ✅ COMPLETE
 
-- [ ] Create `/app/train/page.tsx`
-- [ ] Build form for user registration (name, email)
-- [ ] Implement multi-photo capture (5-10 photos)
-- [ ] Show capture progress
+- [x] Create `/app/train/page.tsx`
+- [x] Build form for user registration (name, email)
+- [x] Implement multi-photo capture (8 photos)
+- [x] Show capture progress
+- [x] Added navigation component and routing
+- [x] Integrated shadcn/ui components
+- [x] Countdown timer for photo capture
+- [x] Real-time face detection validation
+- [x] Photo preview grid with face detection status
 
 ### Task 3.2: Process Training Data
 
