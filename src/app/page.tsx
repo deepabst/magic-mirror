@@ -1,17 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import WebcamComponent from "./components/Webcam";
+import {
+  loadFaceApiModels,
+  getModelLoadingStatus,
+} from "./lib/face-recognition";
 
 export default function Home() {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [captureCount, setCaptureCount] = useState(0);
+  const [modelStatus, setModelStatus] = useState(getModelLoadingStatus());
 
   const handleCapture = (imageSrc: string) => {
     setCapturedImage(imageSrc);
     setCaptureCount((prev) => prev + 1);
     console.log("Image captured:", imageSrc.substring(0, 50) + "...");
   };
+
+  // Load face-api models on component mount
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        setModelStatus({ isLoading: true, isLoaded: false, error: false });
+        await loadFaceApiModels();
+        setModelStatus({ isLoading: false, isLoaded: true, error: false });
+      } catch (error) {
+        console.error("Failed to load face-api models:", error);
+        setModelStatus({ isLoading: false, isLoaded: false, error: true });
+      }
+    };
+
+    loadModels();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-8">
@@ -45,8 +66,19 @@ export default function Home() {
                   </span>
                 </p>
                 <p>
-                  Status:{" "}
-                  <span className="text-green-400">Ready for Phase 1</span>
+                  Models Status:{" "}
+                  {modelStatus.isLoading && (
+                    <span className="text-yellow-400">🔄 Loading...</span>
+                  )}
+                  {modelStatus.isLoaded && (
+                    <span className="text-green-400">✅ Ready</span>
+                  )}
+                  {modelStatus.error && (
+                    <span className="text-red-400">❌ Error</span>
+                  )}
+                </p>
+                <p>
+                  Task 1.2: <span className="text-green-400">✅ Complete</span>
                 </p>
               </div>
             </div>
@@ -110,7 +142,7 @@ export default function Home() {
         {/* Next Steps */}
         <div className="mt-12 bg-gradient-to-r from-blue-900/50 to-purple-900/50 rounded-lg p-6 border border-blue-500/20">
           <h2 className="text-xl font-semibold text-white mb-4">
-            🚀 Task 1.1 Complete - Next Steps
+            🚀 Tasks 1.1 & 1.2 Complete - Next Steps
           </h2>
           <div className="grid md:grid-cols-3 gap-4 text-sm">
             <div className="bg-green-900/30 rounded-lg p-3">
@@ -122,16 +154,19 @@ export default function Home() {
                 <li>• Camera permissions handling</li>
                 <li>• Screenshot capture functionality</li>
                 <li>• Camera on/off toggle</li>
+                <li>• Face-api.js models downloaded</li>
+                <li>• Model loading utility created</li>
               </ul>
             </div>
             <div className="bg-blue-900/30 rounded-lg p-3">
               <div className="text-blue-400 font-medium mb-1">
-                ⏳ Task 1.2 Next
+                ⏳ Task 1.3 Next
               </div>
               <ul className="text-gray-300 space-y-1">
-                <li>• Download face-api.js models</li>
-                <li>• Setup model loading utility</li>
-                <li>• Place in public/models/</li>
+                <li>• Create FaceDetection component</li>
+                <li>• Load face-api models on mount</li>
+                <li>• Implement face detection on images</li>
+                <li>• Draw bounding boxes on faces</li>
               </ul>
             </div>
             <div className="bg-purple-900/30 rounded-lg p-3">
