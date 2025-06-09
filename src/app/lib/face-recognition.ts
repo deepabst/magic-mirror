@@ -45,22 +45,54 @@ const loadModels = async (): Promise<void> => {
   const MODEL_PATH = "/models";
 
   console.log("🔄 Loading face-api.js models...");
+  console.log(`📁 Model path: ${MODEL_PATH}`);
 
   try {
-    // Load models in parallel for better performance
-    await Promise.all([
-      faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_PATH),
-      faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_PATH),
-      faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_PATH),
-    ]);
+    // Load models sequentially for better error tracking
+    console.log("📥 Loading SSD MobileNetV1...");
+    await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_PATH);
+    console.log("✅ SSD MobileNetV1 loaded");
 
-    console.log("📦 Models loaded:");
+    console.log("📥 Loading Face Landmark 68...");
+    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_PATH);
+    console.log("✅ Face Landmark 68 loaded");
+
+    console.log("📥 Loading Face Recognition Network...");
+    await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_PATH);
+    console.log("✅ Face Recognition Network loaded");
+
+    console.log("📦 All models loaded successfully:");
     console.log("  - SSD MobileNetV1 (Face Detection)");
     console.log("  - Face Landmark 68 Points");
     console.log("  - Face Recognition Network");
   } catch (error) {
     console.error("💥 Error loading models:", error);
-    throw new Error("Failed to load face recognition models");
+
+    // Provide more specific error information
+    if (error instanceof Error) {
+      console.error("Error details:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack?.split("\n").slice(0, 3).join("\n"),
+      });
+    }
+
+    // Check if models directory is accessible
+    console.log("🔍 Debugging model access...");
+    try {
+      const response = await fetch(
+        "/models/ssd_mobilenetv1_model-weights_manifest.json"
+      );
+      console.log(
+        "Model manifest access:",
+        response.status,
+        response.statusText
+      );
+    } catch (fetchError) {
+      console.error("Cannot access model files:", fetchError);
+    }
+
+    throw new Error(`Failed to load face recognition models: ${error}`);
   }
 };
 
